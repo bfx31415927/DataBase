@@ -13,6 +13,8 @@ runtimeLivedata = "1.6.4"
 ksp = "2.0.21-1.0.25"
 #"1.9.0-1.0.13"
 room = "2.6.1"
+# Добавляем версию accompanist
+accompanist = "0.34.0"  # актуальная версия на момент 2026 года
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -35,6 +37,10 @@ androidx-room-room-compiler = {module = "androidx.room:room-compiler", version.r
 androidx-room-runtime = {module = "androidx.room:room-runtime", version.ref  = "roomRuntime"}
 #androidx-runtime-livedata = {module = "androidx.compose.runtime:runtimelivedata", version.ref  = "runtimeLivedata"}
 androidx-compose-runtime-livedata = { group = "androidx.compose.runtime", name = "runtime-livedata", version.ref = "runtimeLivedata" }
+
+# Добавляем библиотеку accompanist-systemuicontroller
+accompanist-systemuicontroller = {group = "com.google.accompanist",name = "accompanist-systemuicontroller",version.ref = "accompanist"}
+
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
