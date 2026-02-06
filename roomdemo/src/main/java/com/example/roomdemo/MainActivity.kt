@@ -111,17 +111,21 @@ fun MainScreen(
     searchResults: List<Product>,
     viewModel: MainViewModel
 ) {
-    var productName by remember { mutableStateOf("") }
-    var productQuantity by remember { mutableStateOf("") }
+//    var productName by remember { mutableStateOf("") }
+//    var productQuantity by remember { mutableStateOf("") }
+
+    val productName by viewModel.productName
+    val productQuantity by viewModel.productQuantity
+
     var searching by remember { mutableStateOf(false) }
 
-    val onProductTextChange = { text: String ->
-        productName = text
-    }
-
-    val onQuantityTextChange = { text: String ->
-        productQuantity = text
-    }
+//    val onProductTextChange = { text: String ->
+//        productName = text
+//    }
+//
+//    val onQuantityTextChange = { text: String ->
+//        productQuantity = text
+//    }
 
     Column(
         horizontalAlignment = CenterHorizontally,
@@ -132,14 +136,16 @@ fun MainScreen(
         CustomTextField(
             title = "Product Name",
             textState = productName,
-            onTextChange = onProductTextChange,
+//            onTextChange = onProductTextChange,
+            onTextChange = { viewModel.setProductName(it) },
             keyboardType = KeyboardType.Text
         )
 
         CustomTextField(
             title = "Quantity",
             textState = productQuantity,
-            onTextChange = onQuantityTextChange,
+//            onTextChange = onQuantityTextChange,
+            { viewModel.setProductQuantity(it) },
             keyboardType = KeyboardType.Number
         )
 
@@ -158,12 +164,15 @@ fun MainScreen(
 
             Button(
                 onClick = {
-                    viewModel.insertProduct(
-                        Product(
-                            productName,
-                            productQuantity.toInt()
-                        ),
-                    )
+                    if(productName.isNotBlank() && isNaturalNumber(productQuantity))
+                    {
+                        viewModel.insertProduct(
+                            Product(
+                                productName,
+                                productQuantity.toInt()
+                            ),
+                        )
+                    }
                     searching = false
                 },
                 contentPadding = contentPadding
@@ -194,8 +203,10 @@ fun MainScreen(
             Button(
                 onClick = {
                     searching = false
-                    productName = ""
-                    productQuantity = ""
+//                    productName = ""
+//                    productQuantity = ""
+                    viewModel.setProductName("")
+                    viewModel.setProductQuantity("")
                 },
                 contentPadding = contentPadding
             ) {

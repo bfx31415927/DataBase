@@ -1,15 +1,27 @@
 package com.example.roomdemo
 
 import android.app.Application
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.compose.runtime.State
 
 class MainViewModel(application: Application): ViewModel() {
 
     val allProducts: LiveData<List<Product>>
     private val repository: ProductRepository
     val searchResults: MutableLiveData<List<Product>>
+
+    // Состояние UI
+    private val _productName = mutableStateOf("")
+    val productName: State<String> = _productName
+
+
+    private val _productQuantity = mutableStateOf("")
+    val productQuantity: State<String> = _productQuantity
+
+
 
     init {
         val productDb = ProductRoomDatabase.getInstance(application)
@@ -31,4 +43,14 @@ class MainViewModel(application: Application): ViewModel() {
     fun deleteProduct(name: String) {
         repository.deleteProduct(name)
     }
+
+    // Методы для обновления
+    fun setProductName(name: String) {
+        _productName.value = name
+    }
+
+    fun setProductQuantity(quantity: String) {
+        _productQuantity.value = quantity
+    }
+
 }
