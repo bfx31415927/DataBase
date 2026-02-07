@@ -222,7 +222,10 @@ fun MainScreen(
         ) {
             val list = if (searching) searchResults else allProducts
 
-            item {
+//            item {
+//                TitleRow(head1 = "ID", head2 = "Product", head3 = "Quantity")
+//            }
+            stickyHeader {
                 TitleRow(head1 = "ID", head2 = "Product", head3 = "Quantity")
             }
 
