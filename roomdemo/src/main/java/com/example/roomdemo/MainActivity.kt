@@ -1,5 +1,6 @@
 package com.example.roomdemo
 
+import android.R.attr.top
 import android.app.Application
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +29,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -215,19 +218,13 @@ fun MainScreen(
             }
         }
 
+        TitleRow(head1 = "ID", head2 = "Product", head3 = "Quantity")
         LazyColumn(
             Modifier
                 .fillMaxWidth()
-                .padding(10.dp)
+                .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 20.dp)
         ) {
             val list = if (searching) searchResults else allProducts
-
-//            item {
-//                TitleRow(head1 = "ID", head2 = "Product", head3 = "Quantity")
-//            }
-            stickyHeader {
-                TitleRow(head1 = "ID", head2 = "Product", head3 = "Quantity")
-            }
 
             items(list) { product ->
                 ProductRow(
@@ -243,14 +240,17 @@ fun MainScreen(
 @Composable
 fun TitleRow(head1: String, head2: String, head3: String) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .height(40.dp)
+            .padding(start = 10.dp, end = 10.dp, bottom = 0.dp)
             .background(MaterialTheme.colorScheme.primary)
             .fillMaxWidth()
-            .padding(5.dp)
     ) {
         Text(
             head1, color = Color.White,
             modifier = Modifier
+                .padding(start = 5.dp)
                 .weight(0.1f)
         )
         Text(
@@ -270,12 +270,10 @@ fun ProductRow(id: Int, name: String, quantity: Int) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(5.dp)
+            .padding(start = 5.dp, end = 5.dp)
+            .height(30.dp)
     ) {
-        Text(
-            id.toString(), modifier = Modifier
-                .weight(0.1f)
-        )
+        Text(id.toString(), modifier = Modifier.weight(0.1f))
         Text(name, modifier = Modifier.weight(0.2f))
         Text(quantity.toString(), modifier = Modifier.weight(0.2f))
     }
