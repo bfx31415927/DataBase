@@ -116,8 +116,9 @@ fun MainScreen(
 
     val productName by viewModel.productName
     val productQuantity by viewModel.productQuantity
+    val searching by viewModel.searching  // Получаем из ViewModel
 
-    var searching by remember { mutableStateOf(false) }
+//    var searching by remember { mutableStateOf(false) }
 
 //    val onProductTextChange = { text: String ->
 //        productName = text
@@ -173,7 +174,7 @@ fun MainScreen(
                             ),
                         )
                     }
-                    searching = false
+                    viewModel.cancelSearch()
                 },
                 contentPadding = contentPadding
             ) {
@@ -182,7 +183,7 @@ fun MainScreen(
 
             Button(
                 onClick = {
-                    searching = true
+                    viewModel.startSearch()
                     viewModel.findProduct(productName)
                 },
                 contentPadding = contentPadding
@@ -192,7 +193,7 @@ fun MainScreen(
 
             Button(
                 onClick = {
-                    searching = false
+                    viewModel.cancelSearch()
                     viewModel.deleteProduct(productName)
                 },
                 contentPadding = contentPadding
@@ -202,7 +203,7 @@ fun MainScreen(
 
             Button(
                 onClick = {
-                    searching = false
+                    viewModel.cancelSearch()
 //                    productName = ""
 //                    productQuantity = ""
                     viewModel.setProductName("")

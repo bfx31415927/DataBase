@@ -9,6 +9,17 @@ import androidx.compose.runtime.State
 
 class MainViewModel(application: Application): ViewModel() {
 
+    private val _searching = mutableStateOf(false)
+    val searching: State<Boolean> = _searching
+
+    fun startSearch() {
+        _searching.value = true
+    }
+
+    fun cancelSearch() {
+        _searching.value = false
+    }
+
     val allProducts: LiveData<List<Product>>
     private val repository: ProductRepository
     val searchResults: MutableLiveData<List<Product>>
