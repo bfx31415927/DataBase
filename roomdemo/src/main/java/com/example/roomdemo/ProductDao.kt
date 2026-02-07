@@ -11,13 +11,13 @@ interface ProductDao {
     @Insert
     fun insertProduct(product: Product)
 
-    @Query("SELECT * FROM products WHERE productName = :name")
+    @Query("SELECT * FROM products WHERE productName = :name ORDER BY productName")
     fun findProduct(name: String): List<Product>
 
     @Query("DELETE FROM products WHERE productName = :name")
     fun deleteProduct(name: String)
 
-    @Query("SELECT * FROM products")
+    @Query("SELECT * FROM products ORDER BY productName")
     fun getAllProducts(): LiveData<List<Product>>
 
 }
