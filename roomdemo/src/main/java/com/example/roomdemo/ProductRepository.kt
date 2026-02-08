@@ -23,14 +23,16 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
-    fun findProduct(name: String) {
-        coroutineScope.launch(Dispatchers.Main) {
+    fun findProduct(name: String): LiveData<List<Product>> {
+        // Обновляем MutableLiveData в репозитории
+        coroutineScope.launch {
             searchResults.value = asyncFind(name).await()
         }
+        return searchResults
     }
 
     private fun asyncFind(name: String): Deferred<List<Product>?> =
         coroutineScope.async(Dispatchers.IO) {
-            return@async productDao.findProduct(name)
+            productDao.findProduct(name)
         }
 }
