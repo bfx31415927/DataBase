@@ -13,7 +13,7 @@ class Product {
     @ColumnInfo(name = "productId")
     var id: Int = 0
 
-    @ColumnInfo(name = "productName")
+    @ColumnInfo(name = "productName", defaultValue = "")
     var productName: String = ""
     var quantity: Int = 0
 
