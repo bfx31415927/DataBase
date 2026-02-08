@@ -17,6 +17,10 @@ class Product {
     var productName: String = ""
     var quantity: Int = 0
 
+    // Новое поле
+    @ColumnInfo(name = "productMarked")
+    var marked: Boolean = false
+
     constructor() {}
 
     constructor(id: Int, productname: String, quantity: Int) {

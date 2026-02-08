@@ -6,6 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.compose.runtime.State
+import androidx.lifecycle.viewModelScope
 
 class MainViewModel(application: Application): ViewModel() {
 
