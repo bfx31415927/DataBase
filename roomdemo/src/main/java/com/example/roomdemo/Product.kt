@@ -13,12 +13,12 @@ class Product {
     @ColumnInfo(name = "productId")
     var id: Int = 0
 
-    @ColumnInfo(name = "productName")
+    @ColumnInfo(name = "productName", defaultValue = "")
     var productName: String = ""
     var quantity: Int = 0
 
     // Новое поле
-    @ColumnInfo(name = "productMarked")
+    @ColumnInfo(name = "productMarked", defaultValue = "0")
     var marked: Boolean = false
 
     constructor() {}
