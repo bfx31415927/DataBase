@@ -21,10 +21,10 @@ interface ProductDao {
     fun getAllProducts(): LiveData<List<Product>>
 
     @Query("SELECT * FROM products WHERE productMarked = 1")
-    fun getAllMarkedProducts(): LiveData<List<Product>>
+    fun getAllMarkedProducts(): List<Product>
 
     @Query("SELECT * FROM products WHERE productMarked = 0")
-    fun getAllUnmarkedProducts(): LiveData<List<Product>>
+    fun getAllUnmarkedProducts(): List<Product>
 
     @Query("UPDATE products SET productMarked = 1 WHERE productId = :id")
     fun markProductOnId(id: Int)

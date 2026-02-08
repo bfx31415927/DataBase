@@ -17,20 +17,73 @@ class ProductRepository(private val productDao: ProductDao) {
         }
     }
 
+    fun findProduct(name: String): LiveData<List<Product>> {
+        // Обновляем MutableLiveData в репозитории
+        coroutineScope.launch {
+            searchResults.value = asyncFind(name).await()
+        }
+        return searchResults
+    }
+
+    private fun asyncFind(name: String): Deferred<List<Product>?> =
+        coroutineScope.async(Dispatchers.IO) {
+            productDao.findProduct(name)
+        }
+
     fun deleteProduct(name: String) {
         coroutineScope.launch(Dispatchers.IO) {
             productDao.deleteProduct(name)
         }
     }
 
-    fun findProduct(name: String) {
-        coroutineScope.launch(Dispatchers.Main) {
-            searchResults.value = asyncFind(name).await()
+    fun getAllMarkedProducts(): LiveData<List<Product>> {
+        coroutineScope.launch {
+            searchResults.value = asyncGetAllMarkedProducts().await()
+        }
+        return searchResults
+    }
+
+    private fun asyncGetAllMarkedProducts(): Deferred<List<Product>?> =
+        coroutineScope.async(Dispatchers.IO) {
+            productDao.getAllMarkedProducts()
+        }
+
+    fun getAllUnmarkedProducts(): LiveData<List<Product>> {
+        coroutineScope.launch {
+            searchResults.value = asyncGetAllUnmarkedProducts().await()
+        }
+        return searchResults
+    }
+
+    private fun asyncGetAllUnmarkedProducts(): Deferred<List<Product>?> =
+        coroutineScope.async(Dispatchers.IO) {
+            productDao.getAllUnmarkedProducts()
+        }
+
+    fun markProductOnId(id: Int) {
+        coroutineScope.launch(Dispatchers.IO) {
+            productDao.markProductOnId(id)
         }
     }
 
-    private fun asyncFind(name: String): Deferred<List<Product>?> =
-        coroutineScope.async(Dispatchers.IO) {
-            return@async productDao.findProduct(name)
+    fun unmarkProductOnId(id: Int) {
+        coroutineScope.launch(Dispatchers.IO) {
+            productDao.unmarkProductOnId(id)
         }
+    }
+
+    fun unmarkAllProducts() {
+        coroutineScope.launch(Dispatchers.IO) {
+            productDao.unmarkAllProducts()
+        }
+    }
+
+    fun deleteAllMarkedProducts() {
+        coroutineScope.launch(Dispatchers.IO) {
+            productDao.deleteAllMarkedProducts()
+        }
+    }
+
+
+
 }

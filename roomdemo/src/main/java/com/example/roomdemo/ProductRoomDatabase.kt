@@ -7,7 +7,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [(Product::class)], version = 1)
+@Database(entities = [(Product::class)], version = 2)
 abstract class ProductRoomDatabase: RoomDatabase()  {
 
     abstract fun productDao(): ProductDao
@@ -25,15 +25,14 @@ abstract class ProductRoomDatabase: RoomDatabase()  {
         fun getInstance(context: Context): ProductRoomDatabase {
             synchronized(this) {
                 var instance = INSTANCE
-
                 if (instance == null) {
                     instance = Room.databaseBuilder(
                         context.applicationContext,
                         ProductRoomDatabase::class.java,
                         "product_database"
-                    ).fallbackToDestructiveMigration()
+                    )
+                        .addMigrations(MIGRATION_1_2)  // вместо fallbackToDestructiveMigration
                         .build()
-
                     INSTANCE = instance
                 }
                 return instance

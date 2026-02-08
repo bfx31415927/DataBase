@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "7b361e0a8fc335c17fbc2f5947351bdf",
+    "identityHash": "04110cf6e565c836771bbe26fb2b9c4b",
     "entities": [
       {
         "tableName": "products",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `productName` TEXT NOT NULL, `quantity` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`productId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `productName` TEXT NOT NULL, `quantity` INTEGER NOT NULL, `productMarked` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "id",
@@ -25,6 +25,12 @@
             "columnName": "quantity",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "marked",
+            "columnName": "productMarked",
+            "affinity": "INTEGER",
+            "notNull": true
           }
         ],
         "primaryKey": {
@@ -40,7 +46,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '7b361e0a8fc335c17fbc2f5947351bdf')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '04110cf6e565c836771bbe26fb2b9c4b')"
     ]
   }
 }
