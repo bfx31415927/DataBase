@@ -37,4 +37,10 @@ interface ProductDao {
 
     @Query("DELETE FROM products WHERE productMarked = 1")
     fun deleteAllMarkedProducts()
+
+    @Query("DELETE FROM products WHERE productMarked = 0")
+    fun deleteAllUnmarkedProducts()
+
+    @Query("DELETE FROM products")
+    fun clearProducts()
 }

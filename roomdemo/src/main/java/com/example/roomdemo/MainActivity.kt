@@ -3,25 +3,36 @@ package com.example.roomdemo
 import android.R.attr.top
 import android.app.Application
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -38,6 +49,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
@@ -132,90 +145,158 @@ fun MainScreen(
 //    }
 
     Column(
-        horizontalAlignment = CenterHorizontally,
+//        horizontalAlignment = CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
     ) {
-        CustomTextField(
-            title = "Product Name",
-            textState = productName,
-//            onTextChange = onProductTextChange,
-            onTextChange = { viewModel.setProductName(it) },
-            keyboardType = KeyboardType.Text
-        )
-
-        CustomTextField(
-            title = "Quantity",
-            textState = productQuantity,
-//            onTextChange = onQuantityTextChange,
-            { viewModel.setProductQuantity(it) },
-            keyboardType = KeyboardType.Number
-        )
-
         Row(
             horizontalArrangement = Arrangement.SpaceEvenly,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(5.dp)
         ) {
-            val contentPadding = PaddingValues(  // внутренние отступы
-                start = 4.dp,   // (8.dp по умолчанию)
-                top = 4.dp,
-                end = 4.dp,   // (8.dp по умолчанию)
-                bottom = 4.dp
+            CustomTextField(
+                title = "Product Name",
+                textState = productName,
+//            onTextChange = onProductTextChange,
+                onTextChange = { viewModel.setProductName(it) },
+                keyboardType = KeyboardType.Text,
+                width = 160.dp
             )
 
-            Button(
-                onClick = {
-                    if(productName.isNotBlank() && isNaturalNumber(productQuantity))
-                    {
-                        viewModel.insertProduct(
-                            Product(
-                                productName,
-                                productQuantity.toInt()
-                            ),
-                        )
-                    }
-                    viewModel.cancelSearch()
-                },
-                contentPadding = contentPadding
+            CustomTextField(
+                title = "Quantity",
+                textState = productQuantity,
+//            onTextChange = onQuantityTextChange,
+                { viewModel.setProductQuantity(it) },
+                keyboardType = KeyboardType.Number,
+                width = 110.dp
+            )
+        }
+        Column() {
+            Row(//first Row
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
             ) {
-                Text("Add")
-            }
+                val contentPadding = PaddingValues(  // внутренние отступы
+                    start = 4.dp,   // (8.dp по умолчанию)
+                    top = 4.dp,
+                    end = 4.dp,   // (8.dp по умолчанию)
+                    bottom = 4.dp
+                )
 
-            Button(
-                onClick = {
-                    viewModel.startSearch()
-                    viewModel.findProduct(productName)
-                },
-                contentPadding = contentPadding
-            ) {
-                Text("Search")
-            }
+                Button(
+                    onClick = {
+                        if (productName.isNotBlank() && isNaturalNumber(productQuantity)) {
+                            viewModel.insertProduct(
+                                Product(
+                                    productName,
+                                    productQuantity.toInt()
+                                ),
+                            )
+                        }
+                        viewModel.cancelSearch()
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Add")
+                }
 
-            Button(
-                onClick = {
-                    viewModel.cancelSearch()
-                    viewModel.deleteProduct(productName)
-                },
-                contentPadding = contentPadding
-            ) {
-                Text("Delete")
-            }
+                Button(
+                    onClick = {
+                        viewModel.startSearch()
+                        viewModel.findProduct(productName)
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Search")
+                }
 
-            Button(
-                onClick = {
-                    viewModel.cancelSearch()
-//                    productName = ""
-//                    productQuantity = ""
-                    viewModel.setProductName("")
-                    viewModel.setProductQuantity("")
-                },
-                contentPadding = contentPadding
+                Button(
+                    onClick = {
+                        viewModel.cancelSearch()
+                        viewModel.deleteProduct(productName)
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Delete")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.cancelSearch()
+                        viewModel.setProductName("")
+                        viewModel.setProductQuantity("")
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Clear")
+                }
+            } //first Row
+
+            Row(//second Row
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
             ) {
-                Text("Clear")
-            }
+                val contentPadding = PaddingValues(  // внутренние отступы
+                    start = 4.dp,   // (8.dp по умолчанию)
+                    top = 4.dp,
+                    end = 4.dp,   // (8.dp по умолчанию)
+                    bottom = 4.dp
+                )
+
+                Button(
+                    onClick = {
+                        if (productName.isNotBlank() && isNaturalNumber(productQuantity)) {
+                            viewModel.insertProduct(
+                                Product(
+                                    productName,
+                                    productQuantity.toInt()
+                                ),
+                            )
+                        }
+                        viewModel.cancelSearch()
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.startSearch()
+                        viewModel.findProduct(productName)
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.cancelSearch()
+                        viewModel.deleteProduct(productName)
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.cancelSearch()
+                        viewModel.setProductName("")
+                        viewModel.setProductQuantity("")
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("")
+                }
+            } //second Row
         }
 
         TitleRow(head1 = "ID", head2 = "Product", head3 = "Quantity")
@@ -229,7 +310,16 @@ fun MainScreen(
             items(list) { product ->
                 ProductRow(
                     id = product.id, name = product.productName,
-                    quantity = product.quantity
+                    quantity = product.quantity,
+                    marked = product.marked,
+                    onItemClick = {
+                        if( ! product.marked )
+                            viewModel.markProductOnId(product.id)
+                        else
+                            viewModel.unmarkProductOnId(product.id)
+
+                        viewModel.cancelSearch()
+                    }
                 )
             }
         }
@@ -266,12 +356,18 @@ fun TitleRow(head1: String, head2: String, head3: String) {
 }
 
 @Composable
-fun ProductRow(id: Int, name: String, quantity: Int) {
+fun ProductRow(id: Int, name: String, quantity: Int, marked: Boolean, onItemClick: (Int) -> Unit) {
     Row(
+        verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 5.dp, end = 5.dp)
+//            .padding(start = 5.dp, end = 5.dp)
             .height(30.dp)
+//            .background(if (marked) Color.Green else Color.White)
+            //вместо закомментированной выше строки, делаю строку ниже,
+            //чтобы помечать зеленым цветом, а не помеченные - цветом родителя (а не белым)
+            .then(if (marked) Modifier.background(Color.Green) else Modifier)
+            .clickable { onItemClick(id) }
     ) {
         Text(id.toString(), modifier = Modifier.weight(0.1f))
         Text(name, modifier = Modifier.weight(0.2f))
@@ -284,7 +380,8 @@ fun CustomTextField(
     title: String,
     textState: String,
     onTextChange: (String) -> Unit,
-    keyboardType: KeyboardType
+    keyboardType: KeyboardType,
+    width: Dp
 ) {
     OutlinedTextField(
         value = textState,
@@ -294,10 +391,16 @@ fun CustomTextField(
         ),
         singleLine = true,
         label = { Text(title) },
-        modifier = Modifier.padding(10.dp),
+        modifier = Modifier
+            .padding(1.dp)
+            .width(width)
+            .height(60.dp)
+            .background(Color.White),
+
         textStyle = TextStyle(
             fontWeight = FontWeight.Bold,
-            fontSize = 30.sp
+            fontSize = 16.sp,
+            textAlign = TextAlign.Left,
         )
     )
 }
