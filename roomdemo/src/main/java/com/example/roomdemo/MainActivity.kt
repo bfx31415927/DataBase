@@ -46,6 +46,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
@@ -127,25 +128,14 @@ fun MainScreen(
     searchResults: List<Product>,
     viewModel: MainViewModel
 ) {
-//    var productName by remember { mutableStateOf("") }
-//    var productQuantity by remember { mutableStateOf("") }
+    val context = LocalContext.current
+    val view = LocalView.current
 
     val productName by viewModel.productName
     val productQuantity by viewModel.productQuantity
     val searching by viewModel.searching  // Получаем из ViewModel
 
-//    var searching by remember { mutableStateOf(false) }
-
-//    val onProductTextChange = { text: String ->
-//        productName = text
-//    }
-//
-//    val onQuantityTextChange = { text: String ->
-//        productQuantity = text
-//    }
-
     Column(
-//        horizontalAlignment = CenterHorizontally,
         modifier = Modifier
             .fillMaxWidth()
             .padding(top = 32.dp)
@@ -158,7 +148,6 @@ fun MainScreen(
             CustomTextField(
                 title = "Product Name",
                 textState = productName,
-//            onTextChange = onProductTextChange,
                 onTextChange = { viewModel.setProductName(it) },
                 keyboardType = KeyboardType.Text,
                 width = 160.dp
@@ -167,26 +156,25 @@ fun MainScreen(
             CustomTextField(
                 title = "Quantity",
                 textState = productQuantity,
-//            onTextChange = onQuantityTextChange,
-                { viewModel.setProductQuantity(it) },
+                onTextChange = { viewModel.setProductQuantity(it) },
                 keyboardType = KeyboardType.Number,
                 width = 110.dp
             )
         }
         Column() {
+            val contentPadding = PaddingValues(  // внутренние отступы
+                start = 4.dp,   // (8.dp по умолчанию)
+                top = 4.dp,
+                end = 4.dp,   // (8.dp по умолчанию)
+                bottom = 4.dp
+            )
+
             Row(//first Row
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(5.dp)
             ) {
-                val contentPadding = PaddingValues(  // внутренние отступы
-                    start = 4.dp,   // (8.dp по умолчанию)
-                    top = 4.dp,
-                    end = 4.dp,   // (8.dp по умолчанию)
-                    bottom = 4.dp
-                )
-
                 Button(
                     onClick = {
                         if (productName.isNotBlank() && isNaturalNumber(productQuantity)) {
@@ -197,7 +185,7 @@ fun MainScreen(
                                 ),
                             )
                         }
-                        viewModel.cancelSearch()
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
@@ -206,8 +194,8 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.startSearch()
                         viewModel.findProduct(productName)
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
@@ -216,19 +204,22 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.cancelSearch()
-                        viewModel.deleteProduct(productName)
+                        if (productName.isNotBlank()) {
+                            viewModel.deleteProduct(productName)
+                        }
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
-                    Text("Delete")
+                    Text("Del")
                 }
 
                 Button(
                     onClick = {
-                        viewModel.cancelSearch()
                         viewModel.setProductName("")
                         viewModel.setProductQuantity("")
+                        viewModel.cancelSearch()
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
@@ -251,39 +242,68 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        if (productName.isNotBlank() && isNaturalNumber(productQuantity)) {
-                            viewModel.insertProduct(
-                                Product(
-                                    productName,
-                                    productQuantity.toInt()
-                                ),
-                            )
-                        }
-                        viewModel.cancelSearch()
+                        viewModel.unmarkAllProducts()
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
-                    Text("")
+                    Text("Unmark All")
                 }
 
                 Button(
                     onClick = {
-                        viewModel.startSearch()
-                        viewModel.findProduct(productName)
+                        viewModel.deleteAllMarkedProducts()
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
-                    Text("")
+                    Text("Del All Marked")
                 }
 
                 Button(
                     onClick = {
-                        viewModel.cancelSearch()
-                        viewModel.deleteProduct(productName)
+                        viewModel.deleteAllUnmarkedProducts()
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
-                    Text("")
+                    Text("Del All Unmarked")
+                }
+
+            } //second Row
+
+            Row(//third Row
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(5.dp)
+            ) {
+                Button(
+                    onClick = {
+                        viewModel.deleteAllProducts()
+                        hideKeyboard(context, view)
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Del All")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.getAllMarkedProducts()
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Get All Marked")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.getAllUnmarkedProducts()
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Get All Unmarked")
                 }
 
                 Button(
@@ -296,7 +316,7 @@ fun MainScreen(
                 ) {
                     Text("")
                 }
-            } //second Row
+            } //third Row
         }
 
         TitleRow(head1 = "ID", head2 = "Product", head3 = "Quantity")

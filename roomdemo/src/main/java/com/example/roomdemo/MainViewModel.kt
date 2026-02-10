@@ -1,6 +1,7 @@
 package com.example.roomdemo
 
 import android.app.Application
+import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -9,6 +10,7 @@ import androidx.compose.runtime.State
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class MainViewModel(application: Application): ViewModel() {
 
@@ -19,13 +21,10 @@ class MainViewModel(application: Application): ViewModel() {
         _searching.value = true
     }
 
-    fun cancelSearch() {
-        _searching.value = false
-    }
-
     val allProducts: LiveData<List<Product>>
     private val repository: ProductRepository
-    val searchResults: MutableLiveData<List<Product>>
+    private val _searchResults = MutableLiveData<List<Product>>()
+    val searchResults: LiveData<List<Product>> = _searchResults
 
     // Состояние UI
     private val _productName = mutableStateOf("")
@@ -47,85 +46,131 @@ class MainViewModel(application: Application): ViewModel() {
         repository = ProductRepository(productDao)
 
         allProducts = repository.allProducts
-        searchResults = repository.searchResults
     }
 
     // Вставка продукта
     fun insertProduct(product: Product) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insertProduct(product)
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
 
     // Поиск продукта
     fun findProduct(name: String) {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {  // Явно указываем фоновый поток
             val results = repository.findProduct(name)
-            searchResults.value = results
+
+            // Переключаемся на Main для обновления LiveData
+            withContext(Dispatchers.Main) {
+                _searchResults.value = results
+                _searching.value = true
+            }
         }
     }
+    fun cancelSearch() {
+        _searchResults.value = emptyList()
+        _searching.value = false
+    }
+
 
     // Удаление продукта
     fun deleteProduct(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteProduct(name)
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
     fun getAllMarkedProducts() {
-        viewModelScope.launch {
-            val marked = repository.getAllMarkedProducts()
-            searchResults.value = marked
+        viewModelScope.launch(Dispatchers.IO) {  // Явно указываем фоновый поток
+            val results = repository.getAllMarkedProducts()
+
+            // Переключаемся на Main для обновления LiveData
+            withContext(Dispatchers.Main) {
+                _searchResults.value = results
+                _searching.value = true
+            }
         }
     }
 
     fun getAllUnmarkedProducts() {
-        viewModelScope.launch {
-            val marked = repository.getAllUnmarkedProducts()
-            searchResults.value = marked
+        viewModelScope.launch(Dispatchers.IO) {  // Явно указываем фоновый поток
+            val results = repository.getAllUnmarkedProducts()
+
+            // Переключаемся на Main для обновления LiveData
+            withContext(Dispatchers.Main) {
+                _searchResults.value = results
+                _searching.value = true
+            }
         }
     }
 
     fun markProductOnId(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.markProductOnId(id)
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
     fun unmarkProductOnId(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.unmarkProductOnId(id)
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
     fun markAllProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.markAllProducts()
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
     fun unmarkAllProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.unmarkAllProducts()
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
     fun deleteAllMarkedProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteAllMarkedProducts()
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
     fun deleteAllUnmarkedProducts() {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteAllUnmarkedProducts()
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 
-    fun clearProducts() {
+    fun deleteAllProducts() {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.clearProducts()
+            repository.deleteAllProducts()
+            withContext(Dispatchers.Main) {
+                cancelSearch()
+            }
         }
     }
 

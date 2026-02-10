@@ -8,7 +8,7 @@ import kotlinx.coroutines.*
 class ProductRepository(private val productDao: ProductDao) {
 
     val allProducts: LiveData<List<Product>> = productDao.getAllProducts()
-    val searchResults = MutableLiveData<List<Product>>()
+//    val searchResults = MutableLiveData<List<Product>>()
 
 // ----- Просто делегируем вызовы DAO (без корутин!) ------
     suspend fun insertProduct(newproduct: Product) {
@@ -55,7 +55,7 @@ class ProductRepository(private val productDao: ProductDao) {
         productDao.deleteAllUnmarkedProducts()
     }
 
-    suspend fun clearProducts() {
-        productDao.clearProducts()
+    suspend fun deleteAllProducts() {
+        productDao.deleteAllProducts()
     }
 }
