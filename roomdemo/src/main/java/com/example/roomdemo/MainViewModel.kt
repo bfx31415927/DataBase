@@ -1,30 +1,32 @@
 package com.example.roomdemo
 
 import android.app.Application
-import android.util.Log
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.compose.runtime.State
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
-class MainViewModel(application: Application): ViewModel() {
+class MainViewModel(application: Application) : ViewModel() {
 
-    private val _searching = mutableStateOf(false)
-    val searching: State<Boolean> = _searching
+//    private val _searching = mutableStateOf(false)
+//    val searching: State<Boolean> = _searching
 
-    fun startSearch() {
-        _searching.value = true
-    }
+//    fun startSearch() {
+//        _searching.value = true
+//    }
 
-    val allProducts: LiveData<List<Product>>
+//    val allProducts: LiveData<List<Product>>
+
+    val searchQuery: MutableLiveData<String>
+
+    val searchResults: LiveData<List<Product>>
+
     private val repository: ProductRepository
-    private val _searchResults = MutableLiveData<List<Product>>()
-    val searchResults: LiveData<List<Product>> = _searchResults
 
     // Состояние UI
     private val _productName = mutableStateOf("")
@@ -45,10 +47,13 @@ class MainViewModel(application: Application): ViewModel() {
         val productDao = productDb.productDao()
         repository = ProductRepository(productDao)
 
-        allProducts = repository.allProducts
+//        allProducts = repository.allProducts
+
+        searchQuery = repository.searchQuery
+        searchResults = repository.searchResults
+
     }
 
-    // Вставка продукта
     fun insertProduct(product: Product) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.insertProduct(product)
@@ -58,55 +63,50 @@ class MainViewModel(application: Application): ViewModel() {
         }
     }
 
-
-    // Поиск продукта
     fun findProduct(name: String) {
-        viewModelScope.launch(Dispatchers.IO) {  // Явно указываем фоновый поток
-            val results = repository.findProduct(name)
-
-            // Переключаемся на Main для обновления LiveData
-            withContext(Dispatchers.Main) {
-                _searchResults.value = results
-                _searching.value = true
-            }
-        }
+        repository.setSearchQuery(name)
+//        _searching.value = true
     }
+
     fun cancelSearch() {
-        _searchResults.value = emptyList()
-        _searching.value = false
+        repository.setSearchQuery("")
+//        _searching.value = false
     }
 
+//    fun setSearching(b: Boolean) {
+//        _searching.value = b
+//    }
 
     // Удаление продукта
     fun deleteProduct(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.deleteProduct(name)
-            withContext(Dispatchers.Main) {
-                cancelSearch()
-            }
+//            withContext(Dispatchers.Main) {
+//                cancelSearch()
+//            }
         }
     }
 
-    fun getAllMarkedProducts() {
+    fun getAllMarkedProducts() { //toDo
         viewModelScope.launch(Dispatchers.IO) {  // Явно указываем фоновый поток
             val results = repository.getAllMarkedProducts()
 
             // Переключаемся на Main для обновления LiveData
             withContext(Dispatchers.Main) {
-                _searchResults.value = results
-                _searching.value = true
+//                _searchResults.value = results
+//                _searching.value = true
             }
         }
     }
 
-    fun getAllUnmarkedProducts() {
+    fun getAllUnmarkedProducts() { //toDo
         viewModelScope.launch(Dispatchers.IO) {  // Явно указываем фоновый поток
             val results = repository.getAllUnmarkedProducts()
 
             // Переключаемся на Main для обновления LiveData
             withContext(Dispatchers.Main) {
-                _searchResults.value = results
-                _searching.value = true
+//                _searchResults.value = results
+//                _searching.value = true
             }
         }
     }
@@ -114,54 +114,42 @@ class MainViewModel(application: Application): ViewModel() {
     fun markProductOnId(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.markProductOnId(id)
-            withContext(Dispatchers.Main) {
-                cancelSearch()
-            }
+//            withContext(Dispatchers.Main) {
+//                cancelSearch()
+//            }
         }
     }
 
     fun unmarkProductOnId(id: Int) {
         viewModelScope.launch(Dispatchers.IO) {
             repository.unmarkProductOnId(id)
-            withContext(Dispatchers.Main) {
-                cancelSearch()
-            }
+//            withContext(Dispatchers.Main) {
+//                cancelSearch()
+//            }
         }
     }
 
-    fun markAllProducts() {
+    fun conditionalMarkAllProducts(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.markAllProducts()
-            withContext(Dispatchers.Main) {
-                cancelSearch()
-            }
+            repository.conditionalMarkAllProducts(name)
         }
     }
 
-    fun unmarkAllProducts() {
+    fun conditionalUnmarkAllProducts(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.unmarkAllProducts()
-            withContext(Dispatchers.Main) {
-                cancelSearch()
-            }
+            repository.conditionalUnmarkAllProducts(name)
         }
     }
 
-    fun deleteAllMarkedProducts() {
+    fun conditionalDeleteAllMarkedProducts(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteAllMarkedProducts()
-            withContext(Dispatchers.Main) {
-                cancelSearch()
-            }
+            repository.conditionalDeleteAllMarkedProducts(name)
         }
     }
 
-    fun deleteAllUnmarkedProducts() {
+    fun conditionalDeleteAllUnmarkedProducts(name: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            repository.deleteAllUnmarkedProducts()
-            withContext(Dispatchers.Main) {
-                cancelSearch()
-            }
+            repository.conditionalDeleteAllUnmarkedProducts(name)
         }
     }
 

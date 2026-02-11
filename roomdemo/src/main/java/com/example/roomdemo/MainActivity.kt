@@ -1,47 +1,33 @@
 package com.example.roomdemo
 
-import android.R.attr.top
 import android.app.Application
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsFocusedAsState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.luminance
@@ -111,11 +97,11 @@ fun ScreenSetup(
     viewModel: MainViewModel
 ) {
 
-    val allProducts by viewModel.allProducts.observeAsState(listOf())
+//    val allProducts by viewModel.allProducts.observeAsState(listOf())
     val searchResults by viewModel.searchResults.observeAsState(listOf())
 
     MainScreen(
-        allProducts = allProducts,
+//        allProducts = allProducts,
         searchResults = searchResults,
         viewModel = viewModel
 
@@ -124,7 +110,7 @@ fun ScreenSetup(
 
 @Composable
 fun MainScreen(
-    allProducts: List<Product>,
+//    allProducts: List<Product>,
     searchResults: List<Product>,
     viewModel: MainViewModel
 ) {
@@ -133,7 +119,7 @@ fun MainScreen(
 
     val productName by viewModel.productName
     val productQuantity by viewModel.productQuantity
-    val searching by viewModel.searching  // Получаем из ViewModel
+//    val searching by viewModel.searching  // Получаем из ViewModel
 
     Column(
         modifier = Modifier
@@ -242,7 +228,7 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.unmarkAllProducts()
+                        viewModel.conditionalUnmarkAllProducts(viewModel.searchQuery.value)
                         hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
@@ -252,7 +238,7 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.deleteAllMarkedProducts()
+                        viewModel.conditionalDeleteAllMarkedProducts(viewModel.searchQuery.value)
                         hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
@@ -262,7 +248,7 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.deleteAllUnmarkedProducts()
+                        viewModel.conditionalDeleteAllUnmarkedProducts(viewModel.searchQuery.value)
                         hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
@@ -308,13 +294,12 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.cancelSearch()
-                        viewModel.setProductName("")
-                        viewModel.setProductQuantity("")
+                        viewModel.conditionalMarkAllProducts(viewModel.searchQuery.value)
+                        hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
                 ) {
-                    Text("")
+                    Text("Mark All")
                 }
             } //third Row
         }
@@ -325,7 +310,8 @@ fun MainScreen(
                 .fillMaxWidth()
                 .padding(start = 10.dp, end = 10.dp, top = 0.dp, bottom = 20.dp)
         ) {
-            val list = if (searching) searchResults else allProducts
+//            val list = if (searching) searchResults else allProducts
+            val list = searchResults
 
             items(list) { product ->
                 ProductRow(
@@ -333,12 +319,10 @@ fun MainScreen(
                     quantity = product.quantity,
                     marked = product.marked,
                     onItemClick = {
-                        if( ! product.marked )
+                        if (!product.marked)
                             viewModel.markProductOnId(product.id)
                         else
                             viewModel.unmarkProductOnId(product.id)
-
-                        viewModel.cancelSearch()
                     }
                 )
             }

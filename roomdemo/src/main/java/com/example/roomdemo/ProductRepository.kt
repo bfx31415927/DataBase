@@ -2,15 +2,33 @@ package com.example.roomdemo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.switchMap
 import kotlinx.coroutines.*
 
 
 class ProductRepository(private val productDao: ProductDao) {
 
-    val allProducts: LiveData<List<Product>> = productDao.getAllProducts()
-//    val searchResults = MutableLiveData<List<Product>>()
+//    val allProducts: LiveData<List<Product>> = productDao.getAllProducts()
 
-// ----- Просто делегируем вызовы DAO (без корутин!) ------
+    private val _searchQuery = MutableLiveData<String>("")
+
+    val searchQuery = _searchQuery
+
+    // Трансформируем запрос через switchMap
+    val searchResults: LiveData<List<Product>> = _searchQuery.switchMap { query ->
+        if (query.isNotBlank()) {
+            productDao.findProductLive(query)
+        } else {
+            // Если запрос пустой — возвращаем все продукты
+            productDao.getAllProducts()
+        }
+    }
+
+    // Метод для установки поискового запроса
+    fun setSearchQuery(query: String) {
+        _searchQuery.value = query
+    }
+
     suspend fun insertProduct(newproduct: Product) {
         productDao.insertProduct(newproduct)
     }
@@ -39,20 +57,36 @@ class ProductRepository(private val productDao: ProductDao) {
         productDao.unmarkProductOnId(id)
     }
 
-    suspend fun markAllProducts() {
-        productDao.unmarkAllProducts()
+    suspend fun conditionalMarkAllProducts(name: String) {
+        if (name == "") {
+            productDao.markAllProducts()
+        } else {
+            productDao.markAllProductsWithProductName(name)
+        }
     }
 
-    suspend fun unmarkAllProducts() {
-        productDao.unmarkAllProducts()
+    suspend fun conditionalUnmarkAllProducts(name: String) {
+        if (name == "") {
+            productDao.unmarkAllProducts()
+        } else {
+            productDao.unmarkAllProductsWithProductName(name)
+        }
     }
 
-    suspend fun deleteAllMarkedProducts() {
-        productDao.deleteAllMarkedProducts()
+    suspend fun conditionalDeleteAllMarkedProducts(name: String) {
+        if (name == "") {
+            productDao.deleteAllMarkedProducts()
+        } else {
+            productDao.deleteAllMarkedProductsWithProductName(name)
+        }
     }
 
-    suspend fun deleteAllUnmarkedProducts() {
-        productDao.deleteAllUnmarkedProducts()
+    suspend fun conditionalDeleteAllUnmarkedProducts(name: String) {
+        if (name == "") {
+            productDao.deleteAllUnmarkedProducts()
+        } else {
+            productDao.deleteAllUnmarkedProductsWithProductName(name)
+        }
     }
 
     suspend fun deleteAllProducts() {
