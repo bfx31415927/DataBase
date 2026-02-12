@@ -6,11 +6,13 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "products",
-indices = [
-    Index(value = ["productId"], unique = true),
-    Index(value = ["productName"]) //из двух полей: Index(value = ["productName", ""quantity")
-])
+@Entity(
+    tableName = "products",
+    indices = [
+        Index(value = ["productId"], unique = true),
+        Index(value = ["productName"]) //из двух полей: Index(value = ["productName", ""quantity")
+    ]
+)
 class Product {
 
     @PrimaryKey(autoGenerate = true)
@@ -32,6 +34,7 @@ class Product {
         this.productName = productname
         this.quantity = quantity
     }
+
     constructor(productname: String, quantity: Int) {
         this.productName = productname
         this.quantity = quantity

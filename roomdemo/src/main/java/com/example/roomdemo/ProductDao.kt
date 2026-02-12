@@ -23,12 +23,6 @@ interface ProductDao {
     @Query("SELECT * FROM products ORDER BY productName")
     fun getAllProducts(): LiveData<List<Product>>
 
-    @Query("SELECT * FROM products WHERE productMarked = 1 ORDER BY productName")
-    fun getAllMarkedProducts(): List<Product> //Get All Marked
-
-    @Query("SELECT * FROM products WHERE productMarked = 0 ORDER BY productName")
-    fun getAllUnmarkedProducts(): List<Product> //Get All Unmarked
-
     @Query("UPDATE products SET productMarked = 1 WHERE productId = :id")
     fun markProductOnId(id: Int)//клик по строке
 
@@ -40,8 +34,10 @@ interface ProductDao {
     @Query("UPDATE products SET productMarked = 1 WHERE productMarked = 0")
     fun markAllProducts()
 
-    @Query("UPDATE products SET productMarked = 1 WHERE productMarked = 0" +
-            " AND productName = :name")
+    @Query(
+        "UPDATE products SET productMarked = 1 WHERE productMarked = 0" +
+                " AND productName = :name"
+    )
     fun markAllProductsWithProductName(name: String)
 
     //----------------------------------------------
@@ -51,8 +47,10 @@ interface ProductDao {
     @Query("UPDATE products SET productMarked = 0 WHERE productMarked = 1")
     fun unmarkAllProducts()
 
-    @Query("UPDATE products SET productMarked = 0 WHERE productMarked = 1" +
-            " AND productName = :name")
+    @Query(
+        "UPDATE products SET productMarked = 0 WHERE productMarked = 1" +
+                " AND productName = :name"
+    )
     fun unmarkAllProductsWithProductName(name: String)
 
     //----------------------------------------------
@@ -62,8 +60,10 @@ interface ProductDao {
     @Query("DELETE FROM products WHERE productMarked = 1")
     fun deleteAllMarkedProducts()
 
-    @Query("DELETE FROM products WHERE productMarked = 1" +
-            " AND productName = :name")
+    @Query(
+        "DELETE FROM products WHERE productMarked = 1" +
+                " AND productName = :name"
+    )
     fun deleteAllMarkedProductsWithProductName(name: String)
 
     //----------------------------------------------
@@ -73,8 +73,10 @@ interface ProductDao {
     @Query("DELETE FROM products WHERE productMarked = 0")
     fun deleteAllUnmarkedProducts()
 
-    @Query("DELETE FROM products WHERE productMarked = 0" +
-            " AND productName = :name")
+    @Query(
+        "DELETE FROM products WHERE productMarked = 0" +
+                " AND productName = :name"
+    )
     fun deleteAllUnmarkedProductsWithProductName(name: String)
 
     //----------------------------------------------

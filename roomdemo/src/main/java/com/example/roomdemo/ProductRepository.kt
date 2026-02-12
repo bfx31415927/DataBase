@@ -3,19 +3,16 @@ package com.example.roomdemo
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.switchMap
-import kotlinx.coroutines.*
 
 
 class ProductRepository(private val productDao: ProductDao) {
 
-//    val allProducts: LiveData<List<Product>> = productDao.getAllProducts()
+    private val _nameForSearchQuery = MutableLiveData<String>("")
 
-    private val _searchQuery = MutableLiveData<String>("")
-
-    val searchQuery = _searchQuery
+    val nameForSearchQuery = _nameForSearchQuery
 
     // Трансформируем запрос через switchMap
-    val searchResults: LiveData<List<Product>> = _searchQuery.switchMap { query ->
+    val searchResults: LiveData<List<Product>> = _nameForSearchQuery.switchMap { query ->
         if (query.isNotBlank()) {
             productDao.findProductLive(query)
         } else {
@@ -26,7 +23,7 @@ class ProductRepository(private val productDao: ProductDao) {
 
     // Метод для установки поискового запроса
     fun setSearchQuery(query: String) {
-        _searchQuery.value = query
+        _nameForSearchQuery.value = query
     }
 
     suspend fun insertProduct(newproduct: Product) {
@@ -39,14 +36,6 @@ class ProductRepository(private val productDao: ProductDao) {
 
     suspend fun deleteProduct(name: String) {
         productDao.deleteProduct(name)
-    }
-
-    suspend fun getAllMarkedProducts(): List<Product> {
-        return productDao.getAllMarkedProducts()
-    }
-
-    suspend fun getAllUnmarkedProducts(): List<Product> {
-        return productDao.getAllUnmarkedProducts()
     }
 
     suspend fun markProductOnId(id: Int) {

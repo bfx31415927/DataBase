@@ -97,11 +97,9 @@ fun ScreenSetup(
     viewModel: MainViewModel
 ) {
 
-//    val allProducts by viewModel.allProducts.observeAsState(listOf())
     val searchResults by viewModel.searchResults.observeAsState(listOf())
 
     MainScreen(
-//        allProducts = allProducts,
         searchResults = searchResults,
         viewModel = viewModel
 
@@ -110,7 +108,6 @@ fun ScreenSetup(
 
 @Composable
 fun MainScreen(
-//    allProducts: List<Product>,
     searchResults: List<Product>,
     viewModel: MainViewModel
 ) {
@@ -119,7 +116,6 @@ fun MainScreen(
 
     val productName by viewModel.productName
     val productQuantity by viewModel.productQuantity
-//    val searching by viewModel.searching  // Получаем из ViewModel
 
     Column(
         modifier = Modifier
@@ -159,7 +155,7 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp)
+                    .padding(1.dp)
             ) {
                 Button(
                     onClick = {
@@ -217,7 +213,7 @@ fun MainScreen(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(5.dp)
+                    .padding(1.dp)
             ) {
                 val contentPadding = PaddingValues(  // внутренние отступы
                     start = 4.dp,   // (8.dp по умолчанию)
@@ -228,7 +224,17 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.conditionalUnmarkAllProducts(viewModel.searchQuery.value)
+                        viewModel.conditionalMarkAllProducts(viewModel.nameForSearchQuery.value)
+                        hideKeyboard(context, view)
+                    },
+                    contentPadding = contentPadding
+                ) {
+                    Text("Mark All")
+                }
+
+                Button(
+                    onClick = {
+                        viewModel.conditionalUnmarkAllProducts(viewModel.nameForSearchQuery.value)
                         hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
@@ -236,9 +242,19 @@ fun MainScreen(
                     Text("Unmark All")
                 }
 
+
+            } //second Row
+
+            Row(//third Row
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(1.dp)
+            ) {
+
                 Button(
                     onClick = {
-                        viewModel.conditionalDeleteAllMarkedProducts(viewModel.searchQuery.value)
+                        viewModel.conditionalDeleteAllMarkedProducts(viewModel.nameForSearchQuery.value)
                         hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
@@ -248,7 +264,7 @@ fun MainScreen(
 
                 Button(
                     onClick = {
-                        viewModel.conditionalDeleteAllUnmarkedProducts(viewModel.searchQuery.value)
+                        viewModel.conditionalDeleteAllUnmarkedProducts(viewModel.nameForSearchQuery.value)
                         hideKeyboard(context, view)
                     },
                     contentPadding = contentPadding
@@ -256,14 +272,6 @@ fun MainScreen(
                     Text("Del All Unmarked")
                 }
 
-            } //second Row
-
-            Row(//third Row
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(5.dp)
-            ) {
                 Button(
                     onClick = {
                         viewModel.deleteAllProducts()
@@ -272,34 +280,6 @@ fun MainScreen(
                     contentPadding = contentPadding
                 ) {
                     Text("Del All")
-                }
-
-                Button(
-                    onClick = {
-                        viewModel.getAllMarkedProducts()
-                    },
-                    contentPadding = contentPadding
-                ) {
-                    Text("Get All Marked")
-                }
-
-                Button(
-                    onClick = {
-                        viewModel.getAllUnmarkedProducts()
-                    },
-                    contentPadding = contentPadding
-                ) {
-                    Text("Get All Unmarked")
-                }
-
-                Button(
-                    onClick = {
-                        viewModel.conditionalMarkAllProducts(viewModel.searchQuery.value)
-                        hideKeyboard(context, view)
-                    },
-                    contentPadding = contentPadding
-                ) {
-                    Text("Mark All")
                 }
             } //third Row
         }
@@ -365,11 +345,7 @@ fun ProductRow(id: Int, name: String, quantity: Int, marked: Boolean, onItemClic
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
             .fillMaxWidth()
-//            .padding(start = 5.dp, end = 5.dp)
             .height(30.dp)
-//            .background(if (marked) Color.Green else Color.White)
-            //вместо закомментированной выше строки, делаю строку ниже,
-            //чтобы помечать зеленым цветом, а не помеченные - цветом родителя (а не белым)
             .then(if (marked) Modifier.background(Color.Green) else Modifier)
             .clickable { onItemClick(id) }
     ) {
